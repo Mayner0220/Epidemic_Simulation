@@ -4,7 +4,8 @@ n_people = 20
 p_infection = 0.09
 
 class Person():
-    def __init__(self, x, y, vx, vy):
+    def __init__(self, id, x, y, vx, vy):
+        self.id = id
         self.x = x
         self.y = y
         self.vx = vx
@@ -29,7 +30,8 @@ class Person():
         ellipse(self.x, self.y, 10, 10)
     
     def collide(self):
-        for person in people:
+        for i in range(self.id+1, len(people)):
+            person = people[i]
             distance = sqrt((self.x - person.x)**2 + (self.y - person.y)**2)
             
             if distance < 20 and random(0, 1) < p_infection:
@@ -40,7 +42,7 @@ class Person():
 
 people = []        
 for i in range(n_people):
-    person = Person(random(w), random(h), random(0, 5), random(0, 5))
+    person = Person(i, random(w), random(h), random(0, 5), random(0, 5))
     people.append(person)
 
 people[0].status = "infected"        
