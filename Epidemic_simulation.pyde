@@ -2,6 +2,7 @@ w = 800
 h = 800
 n_people = 20
 p_infection = 0.09
+p_recovery = 0.001
 
 class Person():
     def __init__(self, id, x, y, vx, vy):
@@ -24,6 +25,8 @@ class Person():
     def display(self):
         if self.status == "infected":
             fill(255, 0, 0)
+        elif self.status == "recovered":
+            fill(0, 255, 0)
         else:
             fill(255, 255, 255)
         
@@ -39,6 +42,10 @@ class Person():
                     person.status = "infected"
                 elif self.status == "normal" and person.status == "infected":
                     self.status = "infected"
+    
+    def change_status(self):
+        if self.status == "infected" and random(0, 1) < p_recovery:
+            self.status = "recovered"
 
 people = []        
 for i in range(n_people):
@@ -58,4 +65,5 @@ def draw():
     for person in people:
         person.move()
         person.collide()
+        person.change_status()
         person.display()
