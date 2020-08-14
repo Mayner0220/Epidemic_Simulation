@@ -1,8 +1,9 @@
-w = 800
-h = 800
-n_people = 20
+w = 1280
+h = 720
+n_people = 200
 p_infection = 0.09
-p_recovery = 0.001
+p_recovery = 0.0005
+p_death = 0.0003
 
 class Person():
     def __init__(self, id, x, y, vx, vy):
@@ -27,6 +28,10 @@ class Person():
             fill(255, 0, 0)
         elif self.status == "recovered":
             fill(0, 255, 0)
+        elif self.status == "death":
+            fill(70, 70, 70)
+            self.vx = 0
+            self.vy = 0
         else:
             fill(255, 255, 255)
         
@@ -35,6 +40,10 @@ class Person():
     def collide(self):
         for i in range(self.id+1, len(people)):
             person = people[i]
+            
+            if self.status in ["recovered", "death"] or person.status in ["recovered", "death"]:
+                continue
+              
             distance = sqrt((self.x - person.x)**2 + (self.y - person.y)**2)
             
             if distance < 20 and random(0, 1) < p_infection:
@@ -46,6 +55,8 @@ class Person():
     def change_status(self):
         if self.status == "infected" and random(0, 1) < p_recovery:
             self.status = "recovered"
+        if self.status == "infected" and random(0, 1) < p_death:
+            self.status = "death"
 
 people = []        
 for i in range(n_people):
@@ -62,8 +73,22 @@ def setup():
 def draw():
     background(32)
     
+    board = {
+        "normal": 0,
+        "infected": 0,
+        "recovered": 0,
+        "death": 0
+    }
+    
     for person in people:
         person.move()
         person.collide()
         person.change_status()
         person.display()
+        
+        board[person.status] += 1
+
+    for i, (status, n) in enumerate(board.items()):        
+        textSize(16)
+        fill(225, 225, 225)
+        text("%s: %d" % (status, n), 5, 20 * (i + 1))
